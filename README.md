@@ -128,10 +128,11 @@ The project emphasizes:
 
 ## Example API Request
 
-## Retrieve book metadata via ISBN:
-
 ```
 GET /api/books/isbn/9780141182636
+```
+
+```
 Response:
 {
 "title": "The Great Gatsby",
