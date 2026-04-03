@@ -1,5 +1,3 @@
-> Personal project developed to manage a physical book collection using barcode scanning and hierarchical location tracking.
-
 # LeafShelf
 
 ![Laravel](https://img.shields.io/badge/Laravel-10-red)
@@ -7,7 +5,7 @@
 ![License](https://img.shields.io/badge/license-MIT-blue)
 ![Status](https://img.shields.io/badge/status-active-success)
 
-LeafShelf is a personal library management web application designed to organize physical books using a hierarchical location system.
+Personal project developed to manage a physical book collection using barcode scanning and hierarchical location tracking.
 
 The application allows users to catalog books, assign them to real-world shelves, and quickly retrieve them using ISBN lookup and barcode scanning.
 
@@ -28,8 +26,6 @@ The application allows users to catalog books, assign them to real-world shelves
     - View all books located on a specific shelf
 - **External API integration**
     - OpenLibrary fallback with local caching
-
----
 
 ---
 
@@ -87,6 +83,7 @@ Building → Room → Bookshelf → Shelf → Book
 
 ## Project Structure
 
+```bash
 app/
 ├── Http
 │ ├── Controllers
@@ -101,6 +98,7 @@ resources/
 
 routes/
 └── web.php
+```
 
 ---
 
@@ -132,6 +130,7 @@ The project emphasizes:
 
 ## Retrieve book metadata via ISBN:
 
+```
 GET /api/books/isbn/9780141182636
 Response:
 {
@@ -140,6 +139,7 @@ Response:
 "publisher": "Scribner",
 "isbn": "9780141182636"
 }
+```
 
 ## Installation
 
