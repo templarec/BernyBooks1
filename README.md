@@ -132,8 +132,10 @@ The project emphasizes:
 GET /api/books/isbn/9780141182636
 ```
 
-```
 Response:
+
+```
+
 {
 "title": "The Great Gatsby",
 "authors": ["F. Scott Fitzgerald"],
