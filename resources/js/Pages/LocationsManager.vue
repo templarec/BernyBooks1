@@ -1,293 +1,298 @@
 <template>
-    <section class="container mx-auto mt-1 space-y-6 px-4">
-        <Toast />
-        <Head title="Gestione posizioni" />
+    <AuthenticatedLayout>
+        <section class="container mx-auto mt-1 space-y-6 px-4">
+            <Toast />
+            <Head title="Gestione posizioni" />
 
-        <div>
-            <Link
-                class="text-sm text-gray-600 transition hover:text-gray-900"
-                :href="route('dashboard')"
-            >
-                &lt; Dashboard
-            </Link>
-        </div>
+            <div class="space-y-1">
+                <h1 class="text-2xl font-semibold text-gray-900">
+                    Gestione posizioni
+                </h1>
+                <p class="text-sm text-gray-500">
+                    Seleziona un nodo dell'alberatura e aggiungi il livello
+                    successivo direttamente dal pannello contestuale.
+                </p>
+            </div>
 
-        <div class="space-y-1">
-            <h1 class="text-2xl font-semibold text-gray-900">
-                Gestione posizioni
-            </h1>
-            <p class="text-sm text-gray-500">
-                Seleziona un nodo dell'alberatura e aggiungi il livello
-                successivo direttamente dal pannello contestuale.
-            </p>
-        </div>
+            <div class="layout-grid">
+                <div class="tree-panel">
+                    <div class="panel-head">
+                        <div>
+                            <h2 class="panel-title">Alberatura posizioni</h2>
+                            <p class="panel-subtitle">
+                                Clicca un nodo per aggiungere il suo elemento
+                                figlio.
+                            </p>
+                        </div>
 
-        <div class="layout-grid">
-            <div class="tree-panel">
-                <div class="panel-head">
-                    <div>
-                        <h2 class="panel-title">Alberatura posizioni</h2>
-                        <p class="panel-subtitle">
-                            Clicca un nodo per aggiungere il suo elemento
-                            figlio.
-                        </p>
-                    </div>
-
-                    <div class="panel-actions">
-                        <button
-                            type="button"
-                            class="ghost-button"
-                            @click="startFromRoot"
-                        >
-                            Nuova casa
-                        </button>
-                        <button
-                            v-if="selectedNode"
-                            type="button"
-                            class="ghost-button"
-                            @click="clearSelection"
-                        >
-                            Deseleziona
-                        </button>
-                    </div>
-                </div>
-
-                <div class="tree-search">
-                    <span class="tree-search__icon pi pi-search"></span>
-                    <input
-                        v-model="treeSearch"
-                        type="text"
-                        class="tree-search__input"
-                        placeholder="Cerca casa, stanza, libreria o ripiano"
-                    />
-                    <button
-                        v-if="treeSearch"
-                        type="button"
-                        class="tree-search__clear"
-                        @click="treeSearch = ''"
-                    >
-                        Pulisci
-                    </button>
-                </div>
-
-                <Tree
-                    :value="filteredTree"
-                    v-model:expandedKeys="expandedKeys"
-                    class="tree-view"
-                >
-                    <template #default="slotProps">
-                        <button
-                            type="button"
-                            class="tree-node-button"
-                            :class="{
-                                'tree-node-button--active':
-                                    selectedNode?.key === slotProps.node.key,
-                            }"
-                            @click.stop="handleNodeClick(slotProps.node)"
-                        >
-                            <span class="tree-node-button__label">
-                                {{ slotProps.node.label }}
-                            </span>
-                            <span
-                                v-if="showNodeCount(slotProps.node)"
-                                class="tree-node-count"
+                        <div class="panel-actions">
+                            <button
+                                type="button"
+                                class="ghost-button"
+                                @click="startFromRoot"
                             >
-                                {{ nodeCountLabel(slotProps.node) }}
-                            </span>
-                        </button>
-                    </template>
-                </Tree>
-            </div>
-
-            <div class="side-column">
-                <div ref="contextPanel" class="context-panel">
-                    <div class="context-badge">Pannello contestuale</div>
-                    <h3 class="context-title">{{ panelTitle }}</h3>
-                    <p class="context-text">
-                        {{ panelDescription }}
-                    </p>
-
-                    <div v-if="selectedPath" class="selected-path">
-                        <span class="selected-path__label">Contesto</span>
-                        <span class="selected-path__value">{{
-                            selectedPath
-                        }}</span>
-                        <span
-                            v-if="selectedNodeBooksCount !== null"
-                            class="selected-path__meta"
-                        >
-                            {{ selectedNodeBooksCountLabel }}
-                        </span>
+                                Nuova casa
+                            </button>
+                            <button
+                                v-if="selectedNode"
+                                type="button"
+                                class="ghost-button"
+                                @click="clearSelection"
+                            >
+                                Deseleziona
+                            </button>
+                        </div>
                     </div>
-                    <div
-                        v-if="selectedType === 'shelf'"
-                        class="action-card action-card--warning"
-                    >
-                        <div
-                            class="action-card__title action-card__title--warning"
-                        >
-                            Rinomina ripiano
-                        </div>
-                        <p class="action-card__text action-card__text--warning">
-                            Modifica il nome del ripiano selezionato senza
-                            cambiare la sua posizione.
-                        </p>
 
-                        <div class="field-row">
-                            <span class="field-icon pi pi-pencil"></span>
-                            <input
-                                v-model="shelfRename"
-                                class="field-input"
-                                type="text"
-                                placeholder="Nuovo nome ripiano"
-                                @keyup.enter="renameSelectedShelf"
-                            />
-                        </div>
-
-                        <Button
-                            :loading="isRenaming"
-                            :disabled="!canRenameShelf"
-                            label="Rinomina ripiano"
-                            icon="pi pi-pencil"
-                            class="p-button-warning"
-                            @click="renameSelectedShelf"
+                    <div class="tree-search">
+                        <span class="tree-search__icon pi pi-search"></span>
+                        <input
+                            v-model="treeSearch"
+                            type="text"
+                            class="tree-search__input"
+                            placeholder="Cerca casa, stanza, libreria o ripiano"
                         />
-                    </div>
-                    <div v-if="actionType" class="form-block">
-                        <label class="field-label" for="location-name">
-                            {{ inputLabel }}
-                        </label>
-                        <div class="field-row">
-                            <span class="field-icon" :class="actionIcon"></span>
-                            <input
-                                id="location-name"
-                                v-model="newItemName"
-                                class="field-input"
-                                type="text"
-                                :placeholder="inputPlaceholder"
-                                @keyup.enter="submitCurrent"
-                            />
-                        </div>
-
-                        <Button
-                            :loading="isSubmitting"
-                            :disabled="!canSubmit"
-                            :label="submitLabel"
-                            icon="pi pi-check"
-                            class="p-button-success"
-                            @click="submitCurrent"
-                        />
-                    </div>
-
-                    <div
-                        v-else-if="selectedType === 'shelf'"
-                        class="form-block"
-                    >
-                        <Button
-                            label="Vedi libri del ripiano"
-                            icon="pi pi-book"
-                            class="p-button-primary"
-                            @click="goToShelfBooks"
-                        />
-
-                        <Button
-                            label="Inserisci libro"
-                            icon="pi pi-plus"
-                            class="p-button-secondary"
-                            @click="goToShelfInsert"
-                        />
-                    </div>
-
-                    <div v-else class="empty-state">
-                        <i class="pi pi-info-circle"></i>
-                        <span>
-                            Seleziona una casa, una stanza o una libreria per
-                            aggiungere il livello successivo, oppure crea una
-                            nuova casa dalla radice.
-                        </span>
-                    </div>
-                    <div
-                        v-if="selectedNode"
-                        class="action-card action-card--danger"
-                    >
-                        <div
-                            class="action-card__title action-card__title--danger"
-                        >
-                            Rimozione nodo
-                        </div>
-                        <p class="action-card__text action-card__text--danger">
-                            Puoi rimuovere
-                            <strong>{{ selectedNode.label }}</strong>
-                            dalla gerarchia. L'operazione verrà bloccata se
-                            questa rimozione comporta anche l'eliminazione di
-                            libri.
-                        </p>
-
-                        <div
-                            v-if="isDeleteConfirmOpen"
-                            class="inline-confirm inline-confirm--danger"
-                        >
-                            <div class="inline-confirm__text">
-                                Confermi la rimozione di
-                                <strong>{{ selectedNode.label }}</strong
-                                >?
-                            </div>
-
-                            <div class="inline-confirm__actions">
-                                <Button
-                                    type="button"
-                                    label="Annulla"
-                                    icon="pi pi-times"
-                                    class="p-button-text p-button-secondary"
-                                    @click="cancelDelete"
-                                />
-
-                                <Button
-                                    type="button"
-                                    :loading="isDeleting"
-                                    label="Conferma rimozione"
-                                    icon="pi pi-check"
-                                    class="p-button-danger"
-                                    @click="confirmDeleteSelectedNode"
-                                />
-                            </div>
-                        </div>
-
-                        <Button
-                            v-else
+                        <button
+                            v-if="treeSearch"
                             type="button"
-                            :disabled="isDeleting"
-                            label="Rimuovi nodo selezionato"
-                            icon="pi pi-times"
-                            class="p-button-danger"
-                            @click="openDeleteConfirm"
-                        />
+                            class="tree-search__clear"
+                            @click="treeSearch = ''"
+                        >
+                            Pulisci
+                        </button>
                     </div>
+
+                    <Tree
+                        :value="filteredTree"
+                        v-model:expandedKeys="expandedKeys"
+                        class="tree-view"
+                    >
+                        <template #default="slotProps">
+                            <button
+                                type="button"
+                                class="tree-node-button"
+                                :class="{
+                                    'tree-node-button--active':
+                                        selectedNode?.key ===
+                                        slotProps.node.key,
+                                }"
+                                @click.stop="handleNodeClick(slotProps.node)"
+                            >
+                                <span class="tree-node-button__label">
+                                    {{ slotProps.node.label }}
+                                </span>
+                                <span
+                                    v-if="showNodeCount(slotProps.node)"
+                                    class="tree-node-count"
+                                >
+                                    {{ nodeCountLabel(slotProps.node) }}
+                                </span>
+                            </button>
+                        </template>
+                    </Tree>
                 </div>
 
-                <div class="legend-panel">
-                    <h3 class="panel-title">Legenda</h3>
-                    <ul class="legend-list">
-                        <li><i class="pi pi-home"></i><span>Casa</span></li>
-                        <li><i class="pi pi-stop"></i><span>Stanza</span></li>
-                        <li>
-                            <i class="pi pi-server"></i><span>Libreria</span>
-                        </li>
-                        <li>
-                            <i class="pi pi-book"></i>
-                            <span>Ripiano</span>
-                        </li>
-                    </ul>
+                <div class="side-column">
+                    <div ref="contextPanel" class="context-panel">
+                        <div class="context-badge">Pannello contestuale</div>
+                        <h3 class="context-title">{{ panelTitle }}</h3>
+                        <p class="context-text">
+                            {{ panelDescription }}
+                        </p>
+
+                        <div v-if="selectedPath" class="selected-path">
+                            <span class="selected-path__label">Contesto</span>
+                            <span class="selected-path__value">{{
+                                selectedPath
+                            }}</span>
+                            <span
+                                v-if="selectedNodeBooksCount !== null"
+                                class="selected-path__meta"
+                            >
+                                {{ selectedNodeBooksCountLabel }}
+                            </span>
+                        </div>
+                        <div
+                            v-if="selectedType === 'shelf'"
+                            class="action-card action-card--warning"
+                        >
+                            <div
+                                class="action-card__title action-card__title--warning"
+                            >
+                                Rinomina ripiano
+                            </div>
+                            <p
+                                class="action-card__text action-card__text--warning"
+                            >
+                                Modifica il nome del ripiano selezionato senza
+                                cambiare la sua posizione.
+                            </p>
+
+                            <div class="field-row">
+                                <span class="field-icon pi pi-pencil"></span>
+                                <input
+                                    v-model="shelfRename"
+                                    class="field-input"
+                                    type="text"
+                                    placeholder="Nuovo nome ripiano"
+                                    @keyup.enter="renameSelectedShelf"
+                                />
+                            </div>
+
+                            <Button
+                                :loading="isRenaming"
+                                :disabled="!canRenameShelf"
+                                label="Rinomina ripiano"
+                                icon="pi pi-pencil"
+                                class="p-button-warning"
+                                @click="renameSelectedShelf"
+                            />
+                        </div>
+                        <div v-if="actionType" class="form-block">
+                            <label class="field-label" for="location-name">
+                                {{ inputLabel }}
+                            </label>
+                            <div class="field-row">
+                                <span
+                                    class="field-icon"
+                                    :class="actionIcon"
+                                ></span>
+                                <input
+                                    id="location-name"
+                                    v-model="newItemName"
+                                    class="field-input"
+                                    type="text"
+                                    :placeholder="inputPlaceholder"
+                                    @keyup.enter="submitCurrent"
+                                />
+                            </div>
+
+                            <Button
+                                :loading="isSubmitting"
+                                :disabled="!canSubmit"
+                                :label="submitLabel"
+                                icon="pi pi-check"
+                                class="p-button-success"
+                                @click="submitCurrent"
+                            />
+                        </div>
+
+                        <div
+                            v-else-if="selectedType === 'shelf'"
+                            class="form-block"
+                        >
+                            <Button
+                                label="Vedi libri del ripiano"
+                                icon="pi pi-book"
+                                class="p-button-primary"
+                                @click="goToShelfBooks"
+                            />
+
+                            <Button
+                                label="Inserisci libro"
+                                icon="pi pi-plus"
+                                class="p-button-secondary"
+                                @click="goToShelfInsert"
+                            />
+                        </div>
+
+                        <div v-else class="empty-state">
+                            <i class="pi pi-info-circle"></i>
+                            <span>
+                                Seleziona una casa, una stanza o una libreria
+                                per aggiungere il livello successivo, oppure
+                                crea una nuova casa dalla radice.
+                            </span>
+                        </div>
+                        <div
+                            v-if="selectedNode"
+                            class="action-card action-card--danger"
+                        >
+                            <div
+                                class="action-card__title action-card__title--danger"
+                            >
+                                Rimozione nodo
+                            </div>
+                            <p
+                                class="action-card__text action-card__text--danger"
+                            >
+                                Puoi rimuovere
+                                <strong>{{ selectedNode.label }}</strong>
+                                dalla gerarchia. L'operazione verrà bloccata se
+                                questa rimozione comporta anche l'eliminazione
+                                di libri.
+                            </p>
+
+                            <div
+                                v-if="isDeleteConfirmOpen"
+                                class="inline-confirm inline-confirm--danger"
+                            >
+                                <div class="inline-confirm__text">
+                                    Confermi la rimozione di
+                                    <strong>{{ selectedNode.label }}</strong
+                                    >?
+                                </div>
+
+                                <div class="inline-confirm__actions">
+                                    <Button
+                                        type="button"
+                                        label="Annulla"
+                                        icon="pi pi-times"
+                                        class="p-button-text p-button-secondary"
+                                        @click="cancelDelete"
+                                    />
+
+                                    <Button
+                                        type="button"
+                                        :loading="isDeleting"
+                                        label="Conferma rimozione"
+                                        icon="pi pi-check"
+                                        class="p-button-danger"
+                                        @click="confirmDeleteSelectedNode"
+                                    />
+                                </div>
+                            </div>
+
+                            <Button
+                                v-else
+                                type="button"
+                                :disabled="isDeleting"
+                                label="Rimuovi nodo selezionato"
+                                icon="pi pi-times"
+                                class="p-button-danger"
+                                @click="openDeleteConfirm"
+                            />
+                        </div>
+                    </div>
+
+                    <div class="legend-panel">
+                        <h3 class="panel-title">Legenda</h3>
+                        <ul class="legend-list">
+                            <li><i class="pi pi-home"></i><span>Casa</span></li>
+                            <li>
+                                <i class="pi pi-stop"></i><span>Stanza</span>
+                            </li>
+                            <li>
+                                <i class="pi pi-server"></i
+                                ><span>Libreria</span>
+                            </li>
+                            <li>
+                                <i class="pi pi-book"></i>
+                                <span>Ripiano</span>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
+    </AuthenticatedLayout>
 </template>
 
 <script>
 import axios from "axios";
 import { Head, Link } from "@inertiajs/inertia-vue3";
 import Toast from "primevue/toast";
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 
 export default {
     name: "LocationsManager",
@@ -296,6 +301,7 @@ export default {
         Head,
         Link,
         Toast,
+        AuthenticatedLayout,
     },
 
     data() {
